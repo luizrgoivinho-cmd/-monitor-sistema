@@ -6,3 +6,4 @@ memoria = 60
 print(f"Uso da cpu: {cpu}%")
 print(f"Uso da memoria: {memoria}")
 
+print("Verificação concluida")
