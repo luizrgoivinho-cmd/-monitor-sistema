@@ -1,9 +1,20 @@
-print("monitor de sistema iniciado!")
+import psutil
+import time
 
-cpu = 25
-memoria = 60
+print("=== Monitor de sistemas ===")
 
-print(f"Uso da cpu: {cpu}%")
-print(f"Uso da memoria: {memoria}")
+while True:
+	cpu  = psutil.cpu_percent(interval=1)
+	memoria = psutil.virtual_memory()
 
-print("Verificação concluida")
+	print(f"Uso da CPU: {cpu}%")
+	print(f"Uso da memória RAM: {memoria.percent}%")
+
+	if cpu >80:
+		print("ALERTA: uso elevado da CPU!")
+
+	if memoria.percent > 80:
+		print("ALERTA: uso elevado da memória!")
+	
+	print("-" * 30)
+	time.sleep(1)
