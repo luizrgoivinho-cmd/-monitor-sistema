@@ -4,6 +4,26 @@ import time
 import psutil
 from datetime import datetime
 
+def verificar_cpu(cpu):
+    if cpu > 80:
+        return f"cpu elevada: {cpu}%"
+    return None
+
+def verificar_memoria(memoria):
+    if memoria > 80:
+        return f"Memoria RAM elevada: {memoria}%"
+    return None
+
+def registrar_alertas(alertas):
+    with open("alerta.log", "a") as arquivos:
+        for alerta in alertas:
+            horario = datetime.now().strfti3me("%Y-%m-%d %H:%M:%S")
+            mensagem = f"{horario} - {alerta}"
+            print(mensagem)
+            arquivo.write(mensagem + "\n")
+
+
+
 while True:
     cpu = psutil.cpu_percent(interval=1)
     memoria = psutil.virtual_memory()
@@ -19,21 +39,17 @@ while True:
 
     alertas = []
 
-    if cpu > 80:
-        alertas.append(f"CPU elevada: {cpu}%")
+    alerta_cpu = verificar_cpu(cpu)
+    if alerta_cpu is not None:
+        alertas.append(alerta_cpu)
 
-    if memoria.percent > 80:
-        alertas.append(f"Memória RAM elevada: {memoria.percent}%")
+    alerta_memoria = verificar_memoria(memoria.percent)
+    if alerta_memoria is not None:
+        alertas.append(alerta_memoria)
 
     if alertas:
         print("\nStatus: Alerta! Uso elevado.")
-
-        with open("alerta.log", "a") as arquivo:
-            for alerta in alertas:
-                horario = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                mensagem = f"{horario} - {alerta}"
-                print(mensagem)
-                arquivo.write(mensagem + "\n")
+        registrar_alertas(alertas)
     else:
         print("\nStatus: Sistema normal.")
 
