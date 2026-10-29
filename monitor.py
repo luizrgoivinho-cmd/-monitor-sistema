@@ -60,6 +60,8 @@ def registrar_alertas(alertas):
 limite_cpu = escolher_limite("CPU")
 limite_memoria = escolher_limite("memória")
 
+cpu_em_alerta = False
+memoria_em_alerta = False
 
 while True:
     cpu = psutil.cpu_percent(interval=1)
@@ -75,23 +77,43 @@ while True:
     print(f"Memória:   {memoria.percent}%")
 
     alertas = []
+    novos_alertas = []
 
     alerta_cpu = verificar_cpu(cpu, limite_cpu)
+
     if alerta_cpu is not None:
         alertas.append(alerta_cpu)
+
+        if not cpu_em_alerta:
+            novos_alertas.append(alerta_cpu)
+
+        cpu_em_alerta = True
+    else:
+        cpu_em_alerta = False
 
     alerta_memoria = verificar_memoria(
         memoria.percent, limite_memoria
     )
+
     if alerta_memoria is not None:
         alertas.append(alerta_memoria)
 
+        if not memoria_em_alerta:
+            novos_alertas.append(alerta_memoria)
+
+        memoria_em_alerta = True
+    else:
+        memoria_em_alerta = False
+
     if alertas:
         print("\nStatus: Alerta! Uso elevado.")
-        registrar_alertas(alertas)
+
+        if novos_alertas:
+            registrar_alertas(novos_alertas)
     else:
         print("\nStatus: Sistema normal.")
 
+    print("=" * 35)
     print("\nAtualizando a cada 2 segundos...")
     print("=" * 35)
 
