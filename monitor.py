@@ -32,9 +32,10 @@ def escolher_limite(recurso, padrao=80):
 
         if resposta == "n":
             return padrao
-
         print("Erro: digite 's' para sim ou 'n' para não.")
 
+def normalizar_cpu(cpu):
+    return f"CPU normalizada: {cpu}%"
 
 def verificar_cpu(cpu, limite=80):
     if cpu > limite:
@@ -89,6 +90,9 @@ while True:
 
         cpu_em_alerta = True
     else:
+        if cpu_em_alerta:
+            novos_alertas.append(normalizar_cpu(cpu))
+
         cpu_em_alerta = False
 
     alerta_memoria = verificar_memoria(
@@ -103,16 +107,22 @@ while True:
 
         memoria_em_alerta = True
     else:
+        if memoria_em_alerta:
+            novos_alertas.append(
+                f"Memória RAM normalizada: {memoria.percent}%"
+            )
+
         memoria_em_alerta = False
 
     if alertas:
         print("\nStatus: Alerta! Uso elevado.")
 
-        if novos_alertas:
-            registrar_alertas(novos_alertas)
     else:
         print("\nStatus: Sistema normal.")
-
+    
+    if novos_alertas:
+        registrar_alertas(novos_alertas)
+    
     print("=" * 35)
     print("\nAtualizando a cada 2 segundos...")
     print("=" * 35)
