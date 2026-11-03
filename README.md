@@ -52,7 +52,7 @@ source .venv/bin/activate
 Instale a dependência:
 
 ```bash
-pip install psutil
+pip install -r requirements.txt
 ```
 
 ## Execução
