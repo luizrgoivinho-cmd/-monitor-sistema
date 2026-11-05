@@ -1,130 +1,108 @@
-
 import os
 import time
 import psutil
-from datetime import datetime
+
+from funcoes import (
+    obter_limite,
+    escolher_limite,
+    normalizar_cpu,
+    verificar_cpu,
+    verificar_memoria,
+    verificar_disco,
+    registrar_alertas
+)
+def main():
+    limite_cpu = escolher_limite("CPU")
+    limite_memoria = escolher_limite("memória")
+
+    cpu_em_alerta = False
+    memoria_em_alerta = False
+    disco_em_alerta = False
 
 
-def obter_limite(recurso):
     while True:
-        try:
-            limite = float(
-                input(f"Qual o limite de {recurso} (0 a 100)? ")
-            )
+        cpu = psutil.cpu_percent(interval=1)
+        memoria = psutil.virtual_memory()
+        disco = psutil.disk_usage("/").percent
 
-            if 0 <= limite <= 100:
-                return limite
+        os.system("clear")
 
-            print("Erro: digite um valor entre 0 e 100.")
+        print("=" * 35)
+        print("       MONITOR DE SISTEMAS")
+        print("=" * 35)
 
-        except ValueError:
-            print("Erro: digite um número válido.")
+        print(f"\nCPU:       {cpu}%")
+        print(f"Memória:   {memoria.percent}%")
+        print(f"Disco:     {disco}%")
 
+        alertas = []
+        novos_alertas = []
 
-def escolher_limite(recurso, padrao=80):
-    while True:
-        resposta = input(
-            f"Deseja personalizar o limite de {recurso}? (s/n): "
-        ).strip().lower()
+        alerta_cpu = verificar_cpu(cpu, limite_cpu)
 
-        if resposta == "s":
-            return obter_limite(recurso)
+        if alerta_cpu is not None:
+            alertas.append(alerta_cpu)
 
-        if resposta == "n":
-            return padrao
-        print("Erro: digite 's' para sim ou 'n' para não.")
+            if not cpu_em_alerta:
+                novos_alertas.append(alerta_cpu)
 
-def normalizar_cpu(cpu):
-    return f"CPU normalizada: {cpu}%"
+            cpu_em_alerta = True
+        else:
+            if cpu_em_alerta:
+                novos_alertas.append(normalizar_cpu(cpu))
 
-def verificar_cpu(cpu, limite=80):
-    if cpu > limite:
-        return f"CPU elevada: {cpu}%"
-    return None
+            cpu_em_alerta = False
 
+        alerta_memoria = verificar_memoria(
+            memoria.percent, limite_memoria
+        )
 
-def verificar_memoria(memoria, limite=80):
-    if memoria > limite:
-        return f"Memória RAM elevada: {memoria}%"
-    return None
+        if alerta_memoria is not None:
+            alertas.append(alerta_memoria)
 
+            if not memoria_em_alerta:
+                novos_alertas.append(alerta_memoria)
 
-def registrar_alertas(alertas):
-    with open("alerta.log", "a") as arquivo:
-        for alerta in alertas:
-            horario = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            mensagem = f"{horario} - {alerta}"
-            print(mensagem)
-            arquivo.write(mensagem + "\n")
+            memoria_em_alerta = True
+        else:
+            if memoria_em_alerta:
+                novos_alertas.append(
+                    f"Memória RAM normalizada: {memoria.percent}%"
+                )
 
+            memoria_em_alerta = False
 
-limite_cpu = escolher_limite("CPU")
-limite_memoria = escolher_limite("memória")
+        alerta_disco = verificar_disco(disco, limite=80)
 
-cpu_em_alerta = False
-memoria_em_alerta = False
+        if alerta_disco is not None:
+            alertas.append(alerta_disco)
 
-while True:
-    cpu = psutil.cpu_percent(interval=1)
-    memoria = psutil.virtual_memory()
+            if not disco_em_alerta:
+                novos_alertas.append(alerta_disco)
 
-    os.system("clear")
+            disco_em_alerta = True
+        else:
+            if disco_em_alerta:
+                novos_alertas.append(
+                    f"Disco normalizado: {disco}%"
+                )
 
-    print("=" * 35)
-    print("       MONITOR DE SISTEMAS")
-    print("=" * 35)
+            disco_em_alerta = False
 
-    print(f"\nCPU:       {cpu}%")
-    print(f"Memória:   {memoria.percent}%")
+        if alertas:
+            print("\nStatus: Alerta! Uso elevado.")
 
-    alertas = []
-    novos_alertas = []
+        else:
+            print("\nStatus: Sistema normal.")
 
-    alerta_cpu = verificar_cpu(cpu, limite_cpu)
+        if novos_alertas:
+            registrar_alertas(novos_alertas)
 
-    if alerta_cpu is not None:
-        alertas.append(alerta_cpu)
+        print("=" * 35)
+        print("\nAtualizando a cada 2 segundos...")
+        print("=" * 35)
 
-        if not cpu_em_alerta:
-            novos_alertas.append(alerta_cpu)
+        time.sleep(1)
 
-        cpu_em_alerta = True
-    else:
-        if cpu_em_alerta:
-            novos_alertas.append(normalizar_cpu(cpu))
-
-        cpu_em_alerta = False
-
-    alerta_memoria = verificar_memoria(
-        memoria.percent, limite_memoria
-    )
-
-    if alerta_memoria is not None:
-        alertas.append(alerta_memoria)
-
-        if not memoria_em_alerta:
-            novos_alertas.append(alerta_memoria)
-
-        memoria_em_alerta = True
-    else:
-        if memoria_em_alerta:
-            novos_alertas.append(
-                f"Memória RAM normalizada: {memoria.percent}%"
-            )
-
-        memoria_em_alerta = False
-
-    if alertas:
-        print("\nStatus: Alerta! Uso elevado.")
-
-    else:
-        print("\nStatus: Sistema normal.")
-    
-    if novos_alertas:
-        registrar_alertas(novos_alertas)
-    
-    print("=" * 35)
-    print("\nAtualizando a cada 2 segundos...")
-    print("=" * 35)
-
-    time.sleep(1)
+if __name__ == "__main__":
+    main()
