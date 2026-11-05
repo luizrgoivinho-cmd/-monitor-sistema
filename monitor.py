@@ -14,6 +14,7 @@ from funcoes import (
 def main():
     limite_cpu = escolher_limite("CPU")
     limite_memoria = escolher_limite("memória")
+    limite_disco = escolher_limite("disco")
 
     cpu_em_alerta = False
     memoria_em_alerta = False
@@ -72,7 +73,7 @@ def main():
 
             memoria_em_alerta = False
 
-        alerta_disco = verificar_disco(disco, limite=80)
+        alerta_disco = verificar_disco(disco, limite_disco)
 
         if alerta_disco is not None:
             alertas.append(alerta_disco)
