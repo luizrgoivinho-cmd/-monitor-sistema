@@ -1,15 +1,17 @@
 # Monitor de Sistemas
 
-Projeto desenvolvido em Python para monitorar o uso de recursos do computador.
+Projeto desenvolvido em Python para monitorar o uso de recursos do computador, como CPU, memória RAM e disco, identificando situações de uso elevado e registrando alertas.
 
 ## Funcionalidades
 
 - Monitoramento do uso da CPU.
 - Monitoramento do uso da memória RAM.
-- Configuração de limites personalizados.
+- Monitoramento do uso do disco.
+- Configuração de limites personalizados para CPU, memória e disco.
 - Identificação de uso elevado dos recursos.
-- Registro de alertas em arquivo de log.
 - Identificação da normalização dos recursos.
+- Registro de alertas em arquivo de log (`alerta.log`).
+- Prevenção de alertas repetidos enquanto um recurso permanece acima do limite.
 
 ## Tecnologias utilizadas
 
@@ -20,7 +22,9 @@ Projeto desenvolvido em Python para monitorar o uso de recursos do computador.
 
 ## Requisitos
 
-- Python 3 instalado.
+- Linux (Ubuntu ou outra distribuição).
+- Python 3.10 ou superior.
+- pip (gerenciador de pacotes Python).
 - Biblioteca psutil.
 
 ## Instalação
@@ -62,3 +66,37 @@ Execute o programa:
 ```bash
 python monitor.py
 ```
+
+## Configuração dos limites
+
+Ao iniciar o programa, o usuário pode escolher entre utilizar os limites padrão ou personalizar os valores de uso dos recursos.
+
+Os limites podem ser configurados individualmente para:
+
+- CPU.
+- Memória RAM.
+- Disco.
+
+O valor padrão é de 80%, mas o usuário pode definir um limite entre 0 e 100%.
+
+Quando o uso de um recurso ultrapassa o limite configurado, o programa identifica a situação como um alerta.
+
+## Registro de alertas
+
+O programa registra os alertas e as normalizações dos recursos no arquivo `alerta.log`.
+
+Cada registro contém:
+
+- Data e horário do evento.
+- Recurso monitorado.
+- Percentual de utilização.
+- Situação identificada.
+
+Exemplo:
+
+```text
+2026-11-05 08:35:24 - uso do disco elevado: 77.0%
+2026-11-05 08:36:10 - Disco normalizado: 48.0%
+```
+
+O arquivo permite consultar o histórico de eventos identificados pelo monitor.
