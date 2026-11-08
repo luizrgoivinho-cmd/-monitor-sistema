@@ -100,3 +100,32 @@ Exemplo:
 ```
 
 O arquivo permite consultar o histórico de eventos identificados pelo monitor.
+
+## Testes automatizados
+
+O projeto utiliza a biblioteca `unittest`, nativa do Python, para verificar o funcionamento das funções.
+
+Os testes verificam:
+
+- Validação dos limites de utilização.
+- Escolha entre limites padrão e personalizados.
+- Identificação de uso elevado da CPU, memória RAM e disco.
+- Identificação de situações normais dos recursos.
+- Normalização da CPU.
+- Registro de alertas em arquivo.
+
+### Executar os testes
+
+Com o ambiente virtual ativado, execute todos os testes automaticamente:
+
+```bash
+python -m unittest discover -v
+```
+
+Também é possível executar os testes de um arquivo específico:
+
+```bash
+python -m unittest -v test_funcoes.py
+```
+
+Os testes utilizam recursos de simulação (`unittest.mock`) para verificar comportamentos sem depender de entradas manuais ou modificar o arquivo de log real.
