@@ -57,3 +57,20 @@ def registrar_alertas(alertas):
             mensagem = f"{horario} - {alerta}"
             print(mensagem)
             arquivo.write(mensagem + "\n")
+
+def controlar_alerta(estado_atual, alerta, normalizacao):
+    novos_alertas = []
+
+    if alerta is not None:
+        if not estado_atual:
+            novos_alertas.append(alerta)
+
+        estado_atual = True
+
+    else:
+        if estado_atual:
+            novos_alertas.append(normalizacao)
+
+        estado_atual = False
+
+    return novos_alertas, estado_atual

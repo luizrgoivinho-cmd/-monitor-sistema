@@ -7,6 +7,7 @@ from funcoes import verificar_memoria
 from funcoes import verificar_disco
 from funcoes import normalizar_cpu
 from funcoes import registrar_alertas
+from funcoes import controlar_alerta
 
 
 class TestarObterLimite(unittest.TestCase):
@@ -66,6 +67,24 @@ class TestarObterLimite(unittest.TestCase):
         self.assertEqual(resultado, 80)
         self.assertEqual(entrada_simulada.call_count, 2)
 
+    @patch("builtins.print")
+    def test_registrar_alertas(self, print_simulado):
+        arquivo_simulado = mock_open()
+
+        with patch("builtins.open", arquivo_simulado):
+            alertas = ["CPU elevada: 90%"]
+
+            registrar_alertas(alertas)
+
+        arquivo_simulado.assert_called_once_with("alerta.log", "a")
+
+        arquivo_simulado().write.assert_called_once()
+
+        mensagem_gravada = arquivo_simulado().write.call_args[0][0]
+
+        self.assertIn("CPU elevada: 90%", mensagem_gravada)
+        print_simulado.assert_called_once()
+
     def test_cpu_elevada(self):
         resultado = verificar_cpu(90, 80)
 
@@ -101,23 +120,36 @@ class TestarObterLimite(unittest.TestCase):
 
         self.assertEqual(resultado, "CPU normalizada: 50%")
 
-    @patch("builtins.print")
-    def test_registrar_alertas(self, print_simulado):
-        arquivo_simulado = mock_open()
+    def test_novo_alerta(self):
+        resultado = controlar_alerta(False, "CPU elevada: 90%", "CPU normalizada: 50%")
 
-        with patch("builtins.open", arquivo_simulado):
-            alertas = ["CPU elevada: 90%"]
+        self.assertEqual(resultado, (["CPU elevada: 90%"], True))
 
-            registrar_alertas(alertas)
+    def test_alerta_repetindo(self):
+        resultado = controlar_alerta(True, "CPU elevada: 95%", "CPU normalizada: 50%")
 
-        arquivo_simulado.assert_called_once_with("alerta.log", "a")
+        self.assertEqual(resultado, ([], True))
 
-        arquivo_simulado().write.assert_called_once()
+    def test_normalizacao(self):
+        resultado = controlar_alerta(
+            True,
+            None,
+            "CPU normalizada: 50%"
+        )
 
-        mensagem_gravada = arquivo_simulado().write.call_args[0][0]
+        self.assertEqual(
+            resultado,
+            (["CPU normalizada: 50%"], False)
+        )
 
-        self.assertIn("CPU elevada: 90%", mensagem_gravada)
-        print_simulado.assert_called_once()
+    def test_normalizacao_repetida(self):
+        resultado = controlar_alerta(
+            False,
+            None,
+            "CPU normalizada: 45%"
+        )
+
+        self.assertEqual(resultado, ([], False))
 
 if __name__ == "__main__":
     unittest.main()

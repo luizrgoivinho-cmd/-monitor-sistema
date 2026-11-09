@@ -9,7 +9,8 @@ from funcoes import (
     verificar_cpu,
     verificar_memoria,
     verificar_disco,
-    registrar_alertas
+    registrar_alertas,
+    controlar_alerta
 )
 def main():
     limite_cpu = escolher_limite("CPU")
@@ -41,54 +42,44 @@ def main():
 
         alerta_cpu = verificar_cpu(cpu, limite_cpu)
 
+        novos, cpu_em_alerta = controlar_alerta(
+            cpu_em_alerta,
+            alerta_cpu,
+            normalizar_cpu(cpu)
+        )
+
         if alerta_cpu is not None:
             alertas.append(alerta_cpu)
 
-            if not cpu_em_alerta:
-                novos_alertas.append(alerta_cpu)
-
-            cpu_em_alerta = True
-        else:
-            if cpu_em_alerta:
-                novos_alertas.append(normalizar_cpu(cpu))
-
-            cpu_em_alerta = False
+        novos_alertas.extend(novos)
 
         alerta_memoria = verificar_memoria(
             memoria.percent, limite_memoria
         )
 
+        novos, memoria_em_alerta = controlar_alerta(
+            memoria_em_alerta,
+            alerta_memoria,
+            f"Memória RAM normalizada: {memoria.percent}%"
+        )
+
         if alerta_memoria is not None:
             alertas.append(alerta_memoria)
 
-            if not memoria_em_alerta:
-                novos_alertas.append(alerta_memoria)
-
-            memoria_em_alerta = True
-        else:
-            if memoria_em_alerta:
-                novos_alertas.append(
-                    f"Memória RAM normalizada: {memoria.percent}%"
-                )
-
-            memoria_em_alerta = False
+        novos_alertas.extend(novos)
 
         alerta_disco = verificar_disco(disco, limite_disco)
+
+        novos, disco_em_alerta = controlar_alerta(
+            disco_em_alerta,
+            alerta_disco,
+            f"Disco normalizado: {disco}%"
+        )
 
         if alerta_disco is not None:
             alertas.append(alerta_disco)
 
-            if not disco_em_alerta:
-                novos_alertas.append(alerta_disco)
-
-            disco_em_alerta = True
-        else:
-            if disco_em_alerta:
-                novos_alertas.append(
-                    f"Disco normalizado: {disco}%"
-                )
-
-            disco_em_alerta = False
+        novos_alertas.extend(novos)
 
         if alertas:
             print("\nStatus: Alerta! Uso elevado.")
