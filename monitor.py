@@ -1,6 +1,11 @@
 import os
 import time
-import psutil
+
+from coleta import (
+    coletar_cpu,
+    coletar_memoria,
+    coletar_disco
+)
 
 from funcoes import (
     obter_limite,
@@ -21,11 +26,10 @@ def main():
     memoria_em_alerta = False
     disco_em_alerta = False
 
-
     while True:
-        cpu = psutil.cpu_percent(interval=1)
-        memoria = psutil.virtual_memory()
-        disco = psutil.disk_usage("/").percent
+        cpu = coletar_cpu()
+        memoria = coletar_memoria()
+        disco = coletar_disco().percent
 
         os.system("clear")
 
