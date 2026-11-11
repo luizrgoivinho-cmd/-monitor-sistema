@@ -17,8 +17,22 @@ Projeto desenvolvido em Python para monitorar o uso de recursos do computador, c
 
 - Python
 - psutil
+- unittest
 - Git e GitHub
 - Linux (Ubuntu)
+
+## Estrutura do projeto
+
+O projeto foi organizado em módulos para separar as responsabilidades e facilitar a manutenção do código.
+
+| Arquivo | Responsabilidade |
+|---|---|
+| `monitor.py` | Executa o monitoramento e coordena os módulos. |
+| `coleta.py` | Realiza a coleta dos dados de CPU, memória RAM e disco. |
+| `funcoes.py` | Contém as funções de validação, identificação de alertas e registro de eventos. |
+| `test_coleta.py` | Contém os testes automatizados das funções de coleta. |
+| `test_funcoes.py` | Contém os testes automatizados das demais funções. |
+| `requirements.txt` | Lista as dependências do projeto. |
 
 ## Requisitos
 
@@ -53,7 +67,7 @@ Ative o ambiente virtual:
 source .venv/bin/activate
 ```
 
-Instale a dependência:
+Instale as dependências:
 
 ```bash
 pip install -r requirements.txt
@@ -105,27 +119,37 @@ O arquivo permite consultar o histórico de eventos identificados pelo monitor.
 
 O projeto utiliza a biblioteca `unittest`, nativa do Python, para verificar o funcionamento das funções.
 
-Os testes verificam:
+Atualmente, o projeto possui 23 testes automatizados, que verificam:
 
 - Validação dos limites de utilização.
 - Escolha entre limites padrão e personalizados.
 - Identificação de uso elevado da CPU, memória RAM e disco.
 - Identificação de situações normais dos recursos.
 - Normalização da CPU.
+- Controle de alertas repetidos e normalizações.
 - Registro de alertas em arquivo.
+- Coleta de dados da CPU, memória RAM e disco.
 
-### Executar os testes
+Os testes de coleta utilizam `unittest.mock` para simular as chamadas da biblioteca `psutil`, permitindo verificar o comportamento das funções sem depender dos valores reais do computador.
 
-Com o ambiente virtual ativado, execute todos os testes automaticamente:
+### Executar todos os testes
+
+Com o ambiente virtual ativado, execute:
 
 ```bash
 python -m unittest discover -v
 ```
 
-Também é possível executar os testes de um arquivo específico:
+### Executar os testes de um módulo específico
+
+Testes das funções:
 
 ```bash
 python -m unittest -v test_funcoes.py
 ```
 
-Os testes utilizam recursos de simulação (`unittest.mock`) para verificar comportamentos sem depender de entradas manuais ou modificar o arquivo de log real.
+Testes da coleta:
+
+```bash
+python -m unittest -v test_coleta.py
+```
