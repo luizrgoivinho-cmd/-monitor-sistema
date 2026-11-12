@@ -33,6 +33,8 @@ O projeto foi organizado em módulos para separar as responsabilidades e facilit
 | `test_coleta.py` | Contém os testes automatizados das funções de coleta. |
 | `test_funcoes.py` | Contém os testes automatizados das demais funções. |
 | `requirements.txt` | Lista as dependências do projeto. |
+| `interface.py` | Contém as funções responsáveis pela apresentação das informações no terminal. |
+| `test_interface.py` | Contém os testes automatizados das funções de interface. |
 
 ## Requisitos
 
@@ -119,7 +121,7 @@ O arquivo permite consultar o histórico de eventos identificados pelo monitor.
 
 O projeto utiliza a biblioteca `unittest`, nativa do Python, para verificar o funcionamento das funções.
 
-Atualmente, o projeto possui 23 testes automatizados, que verificam:
+Atualmente, o projeto possui 29 testes automatizados, que verificam:
 
 - Validação dos limites de utilização.
 - Escolha entre limites padrão e personalizados.
@@ -129,6 +131,8 @@ Atualmente, o projeto possui 23 testes automatizados, que verificam:
 - Controle de alertas repetidos e normalizações.
 - Registro de alertas em arquivo.
 - Coleta de dados da CPU, memória RAM e disco.
+- Apresentação do cabeçalho, recursos, status e rodapé no terminal.
+- Limpeza da tela do terminal.
 
 Os testes de coleta utilizam `unittest.mock` para simular as chamadas da biblioteca `psutil`, permitindo verificar o comportamento das funções sem depender dos valores reais do computador.
 
@@ -152,4 +156,10 @@ Testes da coleta:
 
 ```bash
 python -m unittest -v test_coleta.py
+```
+
+Testes da interface:
+
+```bash
+python -m unittest -v test_interface.py
 ```

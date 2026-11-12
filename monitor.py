@@ -1,4 +1,3 @@
-import os
 import time
 
 from coleta import (
@@ -8,7 +7,6 @@ from coleta import (
 )
 
 from funcoes import (
-    obter_limite,
     escolher_limite,
     normalizar_cpu,
     verificar_cpu,
@@ -17,6 +15,15 @@ from funcoes import (
     registrar_alertas,
     controlar_alerta
 )
+
+from interface import (
+    limpar_tela,
+    exibir_cabecalho,
+    exibir_recursos,
+    exibir_status,
+    exibir_rodape
+)
+
 def main():
     limite_cpu = escolher_limite("CPU")
     limite_memoria = escolher_limite("memória")
@@ -31,15 +38,9 @@ def main():
         memoria = coletar_memoria()
         disco = coletar_disco().percent
 
-        os.system("clear")
-
-        print("=" * 35)
-        print("       MONITOR DE SISTEMAS")
-        print("=" * 35)
-
-        print(f"\nCPU:       {cpu}%")
-        print(f"Memória:   {memoria.percent}%")
-        print(f"Disco:     {disco}%")
+        limpar_tela()
+        exibir_cabecalho()
+        exibir_recursos(cpu, memoria.percent, disco)
 
         alertas = []
         novos_alertas = []
@@ -85,18 +86,12 @@ def main():
 
         novos_alertas.extend(novos)
 
-        if alertas:
-            print("\nStatus: Alerta! Uso elevado.")
-
-        else:
-            print("\nStatus: Sistema normal.")
+        exibir_status(alertas)
 
         if novos_alertas:
             registrar_alertas(novos_alertas)
 
-        print("=" * 35)
-        print("\nAtualizando a cada 2 segundos...")
-        print("=" * 35)
+        exibir_rodape()
 
         time.sleep(1)
 
