@@ -30,11 +30,12 @@ O projeto foi organizado em módulos para separar as responsabilidades e facilit
 | `monitor.py` | Executa o monitoramento e coordena os módulos. |
 | `coleta.py` | Realiza a coleta dos dados de CPU, memória RAM e disco. |
 | `funcoes.py` | Contém as funções de validação, identificação de alertas e registro de eventos. |
-| `test_coleta.py` | Contém os testes automatizados das funções de coleta. |
-| `test_funcoes.py` | Contém os testes automatizados das demais funções. |
-| `requirements.txt` | Lista as dependências do projeto. |
 | `interface.py` | Contém as funções responsáveis pela apresentação das informações no terminal. |
+| `test_coleta.py` | Contém os testes automatizados das funções de coleta. |
+| `test_funcoes.py` | Contém os testes automatizados das funções de validação e controle de alertas. |
 | `test_interface.py` | Contém os testes automatizados das funções de interface. |
+| `test_monitor.py` | Contém os testes de integração do monitoramento. |
+| `requirements.txt` | Lista as dependências do projeto. |
 
 ## Requisitos
 
@@ -119,22 +120,29 @@ O arquivo permite consultar o histórico de eventos identificados pelo monitor.
 
 ## Testes automatizados
 
-O projeto utiliza a biblioteca `unittest`, nativa do Python, para verificar o funcionamento das funções.
+O projeto utiliza a biblioteca `unittest`, nativa do Python, para verificar o funcionamento das funções e a integração entre os módulos.
 
-Atualmente, o projeto possui 29 testes automatizados, que verificam:
+Atualmente, o projeto possui **36 testes automatizados**, distribuídos entre testes unitários e testes de integração.
+
+Os testes verificam:
 
 - Validação dos limites de utilização.
 - Escolha entre limites padrão e personalizados.
 - Identificação de uso elevado da CPU, memória RAM e disco.
 - Identificação de situações normais dos recursos.
-- Normalização da CPU.
+- Normalização dos recursos.
 - Controle de alertas repetidos e normalizações.
 - Registro de alertas em arquivo.
 - Coleta de dados da CPU, memória RAM e disco.
 - Apresentação do cabeçalho, recursos, status e rodapé no terminal.
 - Limpeza da tela do terminal.
+- Configuração dos limites durante a inicialização do monitor.
+- Integração entre coleta, processamento dos dados e apresentação das informações.
+- Comportamento do monitor diante de alertas e normalizações.
 
 Os testes de coleta utilizam `unittest.mock` para simular as chamadas da biblioteca `psutil`, permitindo verificar o comportamento das funções sem depender dos valores reais do computador.
+
+Os testes de integração utilizam simulações para verificar o funcionamento do `monitor.py`, incluindo a coleta dos recursos, identificação de alertas e prevenção de registros repetidos.
 
 ### Executar todos os testes
 
@@ -162,4 +170,10 @@ Testes da interface:
 
 ```bash
 python -m unittest -v test_interface.py
+```
+
+Testes de integração:
+
+```bash
+python -m unittest -v test_monitor.py
 ```
