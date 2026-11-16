@@ -3,6 +3,13 @@ from unittest.mock import patch, call
 
 import monitor
 
+def criar_recurso_simulado(percent):
+    return type(
+        "Recurso",
+        (),
+        {"percent": percent}
+    )()
+
 class TestarMonitor(unittest.TestCase):
 
     def test_configurar_limites(self):
@@ -28,17 +35,8 @@ class TestarMonitor(unittest.TestCase):
 
 
     def test_coletar_recursos(self):
-        memoria_simulada = type(
-            "Memoria",
-            (),
-            {"percent": 50.0}
-        )()
-
-        disco_simulado = type(
-            "Disco",
-            (),
-            {"percent": 60.0}
-        )()
+        memoria_simulada = criar_recurso_simulado(50.0)
+        disco_simulado = criar_recurso_simulado(60.0)
 
         with patch("monitor.escolher_limite", return_value=80):
             with patch("monitor.coletar_cpu", return_value=30.0) as mock_cpu:
@@ -58,17 +56,9 @@ class TestarMonitor(unittest.TestCase):
         mock_disco.assert_called_once()
 
     def test_identificar_alerta_cpu(self):
-        memoria_simulada = type(
-            "Memoria",
-            (),
-            {"percent": 50.0}
-        )()
 
-        disco_simulado = type(
-            "Disco",
-            (),
-            {"percent": 60.0}
-        )()
+        memoria_simulada = criar_recurso_simulado(50.0)
+        disco_simulado = criar_recurso_simulado(60.0)
 
         with patch("monitor.escolher_limite", return_value=80):
             with patch("monitor.coletar_cpu", return_value=90.0):
@@ -90,17 +80,9 @@ class TestarMonitor(unittest.TestCase):
         ])
 
     def test_normalizar_cpu(self):
-        memoria_simulada = type(
-            "Memoria",
-            (),
-            {"percent": 50.0}
-        )()
 
-        disco_simulado = type(
-            "Disco",
-            (),
-            {"percent": 60.0}
-        )()
+        memoria_simulada = criar_recurso_simulado(50.0)
+        disco_simulado = criar_recurso_simulado(60.0)
 
         with patch("monitor.escolher_limite", return_value=80):
             with patch("monitor.coletar_cpu", side_effect=[90.0, 30.0]):
@@ -125,17 +107,9 @@ class TestarMonitor(unittest.TestCase):
         self.assertEqual(mock_registrar.call_count, 2)
 
     def test_evitar_alertas_repetidos(self):
-        memoria_simulada = type(
-            "Memoria",
-            (),
-            {"percent": 50.0}
-        )()
 
-        disco_simulado = type(
-            "Disco",
-            (),
-            {"percent": 60.0}
-        )()
+        memoria_simulada = criar_recurso_simulado(50.0)
+        disco_simulado = criar_recurso_simulado(60.0)
 
         with patch("monitor.escolher_limite", return_value=80):
             with patch("monitor.coletar_cpu", side_effect=[90.0, 95.0]):
@@ -158,13 +132,13 @@ class TestarMonitor(unittest.TestCase):
 
     def test_evitar_alertas_repetidos_memoria_disco(self):
         memorias_simuladas = [
-            type("Memoria", (), {"percent": 90.0})(),
-            type("Memoria", (), {"percent": 95.0})()
+            criar_recurso_simulado(90.0),
+            criar_recurso_simulado(95.0)
         ]
 
         discos_simulados = [
-            type("Disco", (), {"percent": 90.0})(),
-            type("Disco", (), {"percent": 95.0})()
+            criar_recurso_simulado(90.0),
+            criar_recurso_simulado(95.0)
         ]
 
         with patch("monitor.escolher_limite", return_value=80):
@@ -190,13 +164,13 @@ class TestarMonitor(unittest.TestCase):
 
     def test_normalizar_memoria_disco(self):
         memorias_simuladas = [
-            type("Memoria", (), {"percent": 90.0})(),
-            type("Memoria", (), {"percent": 50.0})()
+            criar_recurso_simulado(90.0),
+            criar_recurso_simulado(50.0)
         ]
 
         discos_simulados = [
-            type("Disco", (), {"percent": 90.0})(),
-            type("Disco", (), {"percent": 60.0})()
+            criar_recurso_simulado(90.0),
+            criar_recurso_simulado(60.0)
         ]
 
         with patch("monitor.escolher_limite", return_value=80):
@@ -229,17 +203,8 @@ class TestarMonitor(unittest.TestCase):
 
 
     def test_executar_ciclo_coletar_recursos(self):
-        memoria_simulada = type(
-            "Memoria",
-            (),
-            {"percent": 50.0}
-        )()
-
-        disco_simulado = type(
-            "Disco",
-            (),
-            {"percent": 60.0}
-        )()
+        memoria_simulada = criar_recurso_simulado(50.0)
+        disco_simulado = criar_recurso_simulado(60.0)
 
         estados_alerta = {
             "cpu": False,
@@ -275,17 +240,8 @@ class TestarMonitor(unittest.TestCase):
         )
 
     def test_executar_ciclo_alerta_cpu(self):
-        memoria_simulada = type(
-            "Memoria",
-            (),
-            {"percent": 50.0}
-        )()
-
-        disco_simulado = type(
-            "Disco",
-            (),
-            {"percent": 60.0}
-        )()
+        memoria_simulada = criar_recurso_simulado(50.0)
+        disco_simulado = criar_recurso_simulado(60.0)
 
         estados_alerta = {
             "cpu": False,
@@ -328,17 +284,8 @@ class TestarMonitor(unittest.TestCase):
         ])
 
     def test_executar_ciclo_normalizar_cpu(self):
-        memoria_simulada = type(
-            "Memoria",
-            (),
-            {"percent": 50.0}
-        )()
-
-        disco_simulado = type(
-            "Disco",
-            (),
-            {"percent": 60.0}
-        )()
+        memoria_simulada = criar_recurso_simulado(50.0)
+        disco_simulado = criar_recurso_simulado(60.0)
 
         estados_alerta = {
             "cpu": False,
@@ -398,17 +345,8 @@ class TestarMonitor(unittest.TestCase):
         self.assertEqual(mock_registrar.call_count, 2)
 
     def test_executar_ciclo_alerta_memoria(self):
-        memoria_simulada = type(
-            "Memoria",
-            (),
-            {"percent": 90.0}
-        )()
-
-        disco_simulado = type(
-            "Disco",
-            (),
-            {"percent": 60.0}
-        )()
+        memoria_simulada = criar_recurso_simulado(90.0)
+        disco_simulado = criar_recurso_simulado(60.0)
 
         estados_alerta = {
             "cpu": False,
@@ -453,23 +391,9 @@ class TestarMonitor(unittest.TestCase):
 
     def test_executar_ciclo_normalizar_memoria(self):
 
-        memoria_simulada_1 = type(
-            "Memoria",
-            (),
-            {"percent": 90.0}
-        )()
-
-        memoria_simulada_2 = type(
-            "Memoria",
-            (),
-            {"percent": 50.0}
-        )()
-
-        disco_simulado = type(
-            "Disco",
-            (),
-            {"percent": 60.0}
-        )()
+        memoria_simulada_1 = criar_recurso_simulado(90.0)
+        memoria_simulada_2 = criar_recurso_simulado(50.0)
+        disco_simulado = criar_recurso_simulado(60.0)
 
         estados_alerta = {
             "cpu": False,
@@ -531,17 +455,8 @@ class TestarMonitor(unittest.TestCase):
         self.assertEqual(mock_registrar.call_count, 2)
 
     def test_executar_ciclo_alerta_disco(self):
-        memoria_simulada = type(
-            "Memoria",
-            (),
-            {"percent": 50.0}
-        )()
-
-        disco_simulado = type(
-            "Disco",
-            (),
-            {"percent": 90.0}
-        )()
+        memoria_simulada = criar_recurso_simulado(50.0)
+        disco_simulado = criar_recurso_simulado(90.0)
 
         estados_alerta = {
             "cpu": False,
@@ -586,23 +501,10 @@ class TestarMonitor(unittest.TestCase):
 
     def test_executar_ciclo_normalizar_disco(self):
 
-        memoria_simulada = type(
-            "Memoria",
-            (),
-            {"percent": 50.0}
-        )()
+        memoria_simulada = criar_recurso_simulado(50.0)
 
-        disco_simulado_1 = type(
-            "Disco",
-            (),
-            {"percent": 90.0}
-        )()
-
-        disco_simulado_2 = type(
-            "Disco",
-            (),
-            {"percent": 60.0}
-        )()
+        disco_simulado_1 = criar_recurso_simulado(90.0)
+        disco_simulado_2 = criar_recurso_simulado(60.0)
 
         estados_alerta = {
             "cpu": False,
