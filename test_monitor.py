@@ -13,17 +13,18 @@ def criar_recurso_simulado(percent):
 class TestarMonitor(unittest.TestCase):
 
     def test_configurar_limites(self):
-        with patch(
-            "monitor.escolher_limite",
-            return_value=80
-        ) as mock_escolher:
-
-            with patch(
+        with (
+            patch(
+                "monitor.escolher_limite",
+                return_value=80
+            ) as mock_escolher,
+            patch(
                 "monitor.coletar_cpu",
                 side_effect=StopIteration
-            ):
-                with self.assertRaises(StopIteration):
-                    monitor.main()
+            )
+        ):
+            with self.assertRaises(StopIteration):
+                monitor.main()
 
         mock_escolher.assert_has_calls([
             call("CPU"),
@@ -33,24 +34,24 @@ class TestarMonitor(unittest.TestCase):
 
         self.assertEqual(mock_escolher.call_count, 3)
 
-
     def test_coletar_recursos(self):
         memoria_simulada = criar_recurso_simulado(50.0)
         disco_simulado = criar_recurso_simulado(60.0)
 
-        with patch("monitor.escolher_limite", return_value=80):
-            with patch("monitor.coletar_cpu", return_value=30.0) as mock_cpu:
-                with patch("monitor.coletar_memoria", return_value=memoria_simulada) as mock_memoria:
-                    with patch("monitor.coletar_disco", return_value=disco_simulado) as mock_disco:
-
-                        with patch("monitor.limpar_tela"):
-                            with patch("monitor.exibir_cabecalho"):
-                                with patch("monitor.exibir_recursos"):
-                                    with patch("monitor.exibir_status"):
-                                        with patch("monitor.exibir_rodape"):
-                                            with patch("monitor.time.sleep", side_effect=StopIteration):
-                                                with self.assertRaises(StopIteration):
-                                                    monitor.main()
+        with (
+            patch("monitor.escolher_limite", return_value=80),
+            patch("monitor.coletar_cpu", return_value=30.0) as mock_cpu,
+            patch("monitor.coletar_memoria", return_value=memoria_simulada) as mock_memoria,
+            patch("monitor.coletar_disco", return_value=disco_simulado) as mock_disco,
+            patch("monitor.limpar_tela"),
+            patch("monitor.exibir_cabecalho"),
+            patch("monitor.exibir_recursos"),
+            patch("monitor.exibir_status"),
+            patch("monitor.exibir_rodape"),
+            patch("monitor.time.sleep", side_effect=StopIteration)
+        ):
+            with self.assertRaises(StopIteration):
+                monitor.main()
         mock_cpu.assert_called_once()
         mock_memoria.assert_called_once()
         mock_disco.assert_called_once()
@@ -60,20 +61,21 @@ class TestarMonitor(unittest.TestCase):
         memoria_simulada = criar_recurso_simulado(50.0)
         disco_simulado = criar_recurso_simulado(60.0)
 
-        with patch("monitor.escolher_limite", return_value=80):
-            with patch("monitor.coletar_cpu", return_value=90.0):
-                with patch("monitor.coletar_memoria", return_value=memoria_simulada):
-                    with patch("monitor.coletar_disco", return_value=disco_simulado):
-
-                        with patch("monitor.limpar_tela"):
-                            with patch("monitor.exibir_cabecalho"):
-                                with patch("monitor.exibir_recursos"):
-                                    with patch("monitor.exibir_status"):
-                                        with patch("monitor.exibir_rodape"):
-                                            with patch("monitor.registrar_alertas") as mock_registrar:
-                                                with patch("monitor.time.sleep", side_effect=StopIteration):
-                                                    with self.assertRaises(StopIteration):
-                                                        monitor.main()
+        with (
+            patch("monitor.escolher_limite", return_value=80),
+            patch("monitor.coletar_cpu", return_value=90.0),
+            patch("monitor.coletar_memoria", return_value=memoria_simulada),
+            patch("monitor.coletar_disco", return_value=disco_simulado),
+            patch("monitor.limpar_tela"),
+            patch("monitor.exibir_cabecalho"),
+            patch("monitor.exibir_recursos"),
+            patch("monitor.exibir_status"),
+            patch("monitor.exibir_rodape"),
+            patch("monitor.registrar_alertas") as mock_registrar,
+            patch("monitor.time.sleep", side_effect=StopIteration)
+        ):
+            with self.assertRaises(StopIteration):
+                monitor.main()
 
         mock_registrar.assert_called_once_with([
             "CPU elevada: 90.0%"
@@ -84,20 +86,21 @@ class TestarMonitor(unittest.TestCase):
         memoria_simulada = criar_recurso_simulado(50.0)
         disco_simulado = criar_recurso_simulado(60.0)
 
-        with patch("monitor.escolher_limite", return_value=80):
-            with patch("monitor.coletar_cpu", side_effect=[90.0, 30.0]):
-                with patch("monitor.coletar_memoria", return_value=memoria_simulada):
-                    with patch("monitor.coletar_disco", return_value=disco_simulado):
-
-                        with patch("monitor.limpar_tela"):
-                            with patch("monitor.exibir_cabecalho"):
-                                with patch("monitor.exibir_recursos"):
-                                    with patch("monitor.exibir_status"):
-                                        with patch("monitor.exibir_rodape"):
-                                            with patch("monitor.registrar_alertas") as mock_registrar:
-                                                with patch("monitor.time.sleep", side_effect=[None, StopIteration]):
-                                                    with self.assertRaises(StopIteration):
-                                                        monitor.main()
+        with (
+            patch("monitor.escolher_limite", return_value=80),
+            patch("monitor.coletar_cpu", side_effect=[90.0, 30.0]),
+            patch("monitor.coletar_memoria", return_value=memoria_simulada),
+            patch("monitor.coletar_disco", return_value=disco_simulado),
+            patch("monitor.limpar_tela"),
+            patch("monitor.exibir_cabecalho"),
+            patch("monitor.exibir_recursos"),
+            patch("monitor.exibir_status"),
+            patch("monitor.exibir_rodape"),
+            patch("monitor.registrar_alertas") as mock_registrar,
+            patch("monitor.time.sleep", side_effect=[None, StopIteration])
+        ):
+            with self.assertRaises(StopIteration):
+                monitor.main()
 
         mock_registrar.assert_has_calls([
             call(["CPU elevada: 90.0%"]),
@@ -111,20 +114,21 @@ class TestarMonitor(unittest.TestCase):
         memoria_simulada = criar_recurso_simulado(50.0)
         disco_simulado = criar_recurso_simulado(60.0)
 
-        with patch("monitor.escolher_limite", return_value=80):
-            with patch("monitor.coletar_cpu", side_effect=[90.0, 95.0]):
-                with patch("monitor.coletar_memoria", return_value=memoria_simulada):
-                    with patch("monitor.coletar_disco", return_value=disco_simulado):
-
-                        with patch("monitor.limpar_tela"):
-                            with patch("monitor.exibir_cabecalho"):
-                                with patch("monitor.exibir_recursos"):
-                                    with patch("monitor.exibir_status"):
-                                        with patch("monitor.exibir_rodape"):
-                                            with patch("monitor.registrar_alertas") as mock_registrar:
-                                                with patch("monitor.time.sleep", side_effect=[None, StopIteration]):
-                                                    with self.assertRaises(StopIteration):
-                                                        monitor.main()
+        with (
+            patch("monitor.escolher_limite", return_value=80),
+            patch("monitor.coletar_cpu", side_effect=[90.0, 95.0]),
+            patch("monitor.coletar_memoria", return_value=memoria_simulada),
+            patch("monitor.coletar_disco", return_value=disco_simulado),
+            patch("monitor.limpar_tela"),
+            patch("monitor.exibir_cabecalho"),
+            patch("monitor.exibir_recursos"),
+            patch("monitor.exibir_status"),
+            patch("monitor.exibir_rodape"),
+            patch("monitor.registrar_alertas") as mock_registrar,
+            patch("monitor.time.sleep", side_effect=[None, StopIteration])
+        ):
+            with self.assertRaises(StopIteration):
+                monitor.main()
 
         mock_registrar.assert_called_once_with([
             "CPU elevada: 90.0%"
@@ -141,20 +145,21 @@ class TestarMonitor(unittest.TestCase):
             criar_recurso_simulado(95.0)
         ]
 
-        with patch("monitor.escolher_limite", return_value=80):
-            with patch("monitor.coletar_cpu", return_value=30.0):
-                with patch("monitor.coletar_memoria", side_effect=memorias_simuladas):
-                    with patch("monitor.coletar_disco", side_effect=discos_simulados):
-
-                        with patch("monitor.limpar_tela"):
-                            with patch("monitor.exibir_cabecalho"):
-                                with patch("monitor.exibir_recursos"):
-                                    with patch("monitor.exibir_status"):
-                                        with patch("monitor.exibir_rodape"):
-                                            with patch("monitor.registrar_alertas") as mock_registrar:
-                                                with patch("monitor.time.sleep", side_effect=[None, StopIteration]):
-                                                    with self.assertRaises(StopIteration):
-                                                        monitor.main()
+        with (
+            patch("monitor.escolher_limite", return_value=80),
+            patch("monitor.coletar_cpu", return_value=30.0),
+            patch("monitor.coletar_memoria", side_effect=memorias_simuladas),
+            patch("monitor.coletar_disco", side_effect=discos_simulados),
+            patch("monitor.limpar_tela"),
+            patch("monitor.exibir_cabecalho"),
+            patch("monitor.exibir_recursos"),
+            patch("monitor.exibir_status"),
+            patch("monitor.exibir_rodape"),
+            patch("monitor.registrar_alertas") as mock_registrar,
+            patch("monitor.time.sleep", side_effect=[None, StopIteration])
+        ):
+            with self.assertRaises(StopIteration):
+                monitor.main()
 
         mock_registrar.assert_called_once_with([
             "Memória RAM elevada: 90.0%",
@@ -173,20 +178,21 @@ class TestarMonitor(unittest.TestCase):
             criar_recurso_simulado(60.0)
         ]
 
-        with patch("monitor.escolher_limite", return_value=80):
-            with patch("monitor.coletar_cpu", return_value=30.0):
-                with patch("monitor.coletar_memoria", side_effect=memorias_simuladas):
-                    with patch("monitor.coletar_disco", side_effect=discos_simulados):
-
-                        with patch("monitor.limpar_tela"):
-                            with patch("monitor.exibir_cabecalho"):
-                                with patch("monitor.exibir_recursos"):
-                                    with patch("monitor.exibir_status"):
-                                        with patch("monitor.exibir_rodape"):
-                                            with patch("monitor.registrar_alertas") as mock_registrar:
-                                                with patch("monitor.time.sleep", side_effect=[None, StopIteration]):
-                                                    with self.assertRaises(StopIteration):
-                                                        monitor.main()
+        with (
+            patch("monitor.escolher_limite", return_value=80),
+            patch("monitor.coletar_cpu", return_value=30.0),
+            patch("monitor.coletar_memoria", side_effect=memorias_simuladas),
+            patch("monitor.coletar_disco", side_effect=discos_simulados),
+            patch("monitor.limpar_tela"),
+            patch("monitor.exibir_cabecalho"),
+            patch("monitor.exibir_recursos"),
+            patch("monitor.exibir_status"),
+            patch("monitor.exibir_rodape"),
+            patch("monitor.registrar_alertas") as mock_registrar,
+            patch("monitor.time.sleep", side_effect=[None, StopIteration])
+        ):
+            with self.assertRaises(StopIteration):
+                monitor.main()
 
         mock_registrar.assert_has_calls([
             call([
@@ -212,22 +218,22 @@ class TestarMonitor(unittest.TestCase):
             "disco": False
         }
 
-        with patch("monitor.coletar_cpu", return_value=30.0) as mock_cpu:
-            with patch("monitor.coletar_memoria", return_value=memoria_simulada) as mock_memoria:
-                with patch("monitor.coletar_disco", return_value=disco_simulado) as mock_disco:
-
-                    with patch("monitor.limpar_tela"):
-                        with patch("monitor.exibir_cabecalho"):
-                            with patch("monitor.exibir_recursos") as mock_recursos:
-                                with patch("monitor.exibir_status"):
-                                    with patch("monitor.exibir_rodape"):
-
-                                        monitor.executar_ciclo(
-                                            80,
-                                            80,
-                                            80,
-                                            estados_alerta
-                                        )
+        with (
+            patch("monitor.coletar_cpu", return_value=30.0) as mock_cpu,
+            patch("monitor.coletar_memoria", return_value=memoria_simulada) as mock_memoria,
+            patch("monitor.coletar_disco", return_value=disco_simulado) as mock_disco,
+            patch("monitor.limpar_tela"),
+            patch("monitor.exibir_cabecalho"),
+            patch("monitor.exibir_recursos") as mock_recursos,
+            patch("monitor.exibir_status"),
+            patch("monitor.exibir_rodape")
+        ):
+            monitor.executar_ciclo(
+                80,
+                80,
+                80,
+                estados_alerta
+            )
 
         mock_cpu.assert_called_once()
         mock_memoria.assert_called_once()
@@ -249,23 +255,23 @@ class TestarMonitor(unittest.TestCase):
             "disco": False
         }
 
-        with patch("monitor.coletar_cpu", return_value=90.0) as mock_cpu:
-            with patch("monitor.coletar_memoria", return_value=memoria_simulada) as mock_memoria:
-                with patch("monitor.coletar_disco", return_value=disco_simulado) as mock_disco:
-
-                    with patch("monitor.limpar_tela"):
-                        with patch("monitor.exibir_cabecalho"):
-                            with patch("monitor.exibir_recursos") as mock_recursos:
-                                with patch("monitor.exibir_status"):
-                                    with patch("monitor.registrar_alertas") as mock_registrar:
-                                        with patch("monitor.exibir_rodape"):
-
-                                            monitor.executar_ciclo(
-                                                80,
-                                                80,
-                                                80,
-                                                estados_alerta
-                                            )
+        with (
+            patch("monitor.coletar_cpu", return_value=90.0) as mock_cpu,
+            patch("monitor.coletar_memoria", return_value=memoria_simulada) as mock_memoria,
+            patch("monitor.coletar_disco", return_value=disco_simulado) as mock_disco,
+            patch("monitor.limpar_tela"),
+            patch("monitor.exibir_cabecalho"),
+            patch("monitor.exibir_recursos") as mock_recursos,
+            patch("monitor.exibir_status"),
+            patch("monitor.registrar_alertas") as mock_registrar,
+            patch("monitor.exibir_rodape")
+        ):
+            monitor.executar_ciclo(
+                80,
+                80,
+                80,
+                estados_alerta
+            )
 
         mock_cpu.assert_called_once()
         mock_memoria.assert_called_once()
@@ -293,30 +299,30 @@ class TestarMonitor(unittest.TestCase):
             "disco": False
         }
 
-        with patch("monitor.coletar_cpu", side_effect=[90.0, 30.0]) as mock_cpu:
-            with patch("monitor.coletar_memoria", return_value=memoria_simulada) as mock_memoria:
-                with patch("monitor.coletar_disco", return_value=disco_simulado) as mock_disco:
+        with (
+            patch("monitor.coletar_cpu", side_effect=[90.0, 30.0]) as mock_cpu,
+            patch("monitor.coletar_memoria", return_value=memoria_simulada) as mock_memoria,
+            patch("monitor.coletar_disco", return_value=disco_simulado) as mock_disco,
+            patch("monitor.limpar_tela"),
+            patch("monitor.exibir_cabecalho"),
+            patch("monitor.exibir_recursos") as mock_recursos,
+            patch("monitor.exibir_status"),
+            patch("monitor.registrar_alertas") as mock_registrar,
+            patch("monitor.exibir_rodape")
+        ):
+            monitor.executar_ciclo(
+                80,
+                80,
+                80,
+                estados_alerta
+            )
 
-                    with patch("monitor.limpar_tela"):
-                        with patch("monitor.exibir_cabecalho"):
-                            with patch("monitor.exibir_recursos") as mock_recursos:
-                                with patch("monitor.exibir_status"):
-                                    with patch("monitor.registrar_alertas") as mock_registrar:
-                                        with patch("monitor.exibir_rodape"):
-
-                                            monitor.executar_ciclo(
-                                                80,
-                                                80,
-                                                80,
-                                                estados_alerta
-                                            )
-
-                                            monitor.executar_ciclo(
-                                                80,
-                                                80,
-                                                80,
-                                                estados_alerta
-                                            )
+            monitor.executar_ciclo(
+                80,
+                80,
+                80,
+                estados_alerta
+            )
 
         mock_cpu.assert_has_calls([
             call(),
@@ -354,23 +360,23 @@ class TestarMonitor(unittest.TestCase):
             "disco": False
         }
 
-        with patch("monitor.coletar_cpu", return_value=30.0) as mock_cpu:
-            with patch("monitor.coletar_memoria", return_value=memoria_simulada) as mock_memoria:
-                with patch("monitor.coletar_disco", return_value=disco_simulado) as mock_disco:
-
-                    with patch("monitor.limpar_tela"):
-                        with patch("monitor.exibir_cabecalho"):
-                            with patch("monitor.exibir_recursos") as mock_recursos:
-                                with patch("monitor.exibir_status"):
-                                    with patch("monitor.registrar_alertas") as mock_registrar:
-                                        with patch("monitor.exibir_rodape"):
-
-                                            monitor.executar_ciclo(
-                                                80,
-                                                80,
-                                                80,
-                                                estados_alerta
-                                            )
+        with (
+            patch("monitor.coletar_cpu", return_value=30.0) as mock_cpu,
+            patch("monitor.coletar_memoria", return_value=memoria_simulada) as mock_memoria,
+            patch("monitor.coletar_disco", return_value=disco_simulado) as mock_disco,
+            patch("monitor.limpar_tela"),
+            patch("monitor.exibir_cabecalho"),
+            patch("monitor.exibir_recursos") as mock_recursos,
+            patch("monitor.exibir_status"),
+            patch("monitor.registrar_alertas") as mock_registrar,
+            patch("monitor.exibir_rodape")
+        ):
+            monitor.executar_ciclo(
+                80,
+                80,
+                80,
+                estados_alerta
+            )
 
         mock_cpu.assert_called_once()
         mock_memoria.assert_called_once()
@@ -401,32 +407,33 @@ class TestarMonitor(unittest.TestCase):
             "disco": False
         }
 
-        with patch("monitor.coletar_cpu", return_value=30.0) as mock_cpu:
-            with patch(
+        with (
+            patch("monitor.coletar_cpu", return_value=30.0) as mock_cpu,
+            patch(
                 "monitor.coletar_memoria",
                 side_effect=[memoria_simulada_1, memoria_simulada_2]
-            ) as mock_memoria:
-                with patch("monitor.coletar_disco", return_value=disco_simulado) as mock_disco:
-                    with patch("monitor.limpar_tela"):
-                        with patch("monitor.exibir_cabecalho"):
-                            with patch("monitor.exibir_recursos") as mock_recursos:
-                                with patch("monitor.exibir_status"):
-                                    with patch("monitor.registrar_alertas") as mock_registrar:
-                                        with patch("monitor.exibir_rodape"):
+            ) as mock_memoria,
+            patch("monitor.coletar_disco", return_value=disco_simulado) as mock_disco,
+            patch("monitor.limpar_tela"),
+            patch("monitor.exibir_cabecalho"),
+            patch("monitor.exibir_recursos") as mock_recursos,
+            patch("monitor.exibir_status"),
+            patch("monitor.registrar_alertas") as mock_registrar,
+            patch("monitor.exibir_rodape")
+        ):
+            monitor.executar_ciclo(
+                80,
+                80,
+                80,
+                estados_alerta
+            )
 
-                                            monitor.executar_ciclo(
-                                                80,
-                                                80,
-                                                80,
-                                                estados_alerta
-                                            )
-
-                                            monitor.executar_ciclo(
-                                                80,
-                                                80,
-                                                80,
-                                                estados_alerta
-                                            )
+            monitor.executar_ciclo(
+                80,
+                80,
+                80,
+                estados_alerta
+            )
 
         mock_cpu.assert_has_calls([
             call(),
@@ -464,23 +471,23 @@ class TestarMonitor(unittest.TestCase):
             "disco": False
         }
 
-        with patch("monitor.coletar_cpu", return_value=30.0) as mock_cpu:
-            with patch("monitor.coletar_memoria", return_value=memoria_simulada) as mock_memoria:
-                with patch("monitor.coletar_disco", return_value=disco_simulado) as mock_disco:
-
-                    with patch("monitor.limpar_tela"):
-                        with patch("monitor.exibir_cabecalho"):
-                            with patch("monitor.exibir_recursos") as mock_recursos:
-                                with patch("monitor.exibir_status"):
-                                    with patch("monitor.registrar_alertas") as mock_registrar:
-                                        with patch("monitor.exibir_rodape"):
-
-                                            monitor.executar_ciclo(
-                                                80,
-                                                80,
-                                                80,
-                                                estados_alerta
-                                            )
+        with (
+            patch("monitor.coletar_cpu", return_value=30.0) as mock_cpu,
+            patch("monitor.coletar_memoria", return_value=memoria_simulada) as mock_memoria,
+            patch("monitor.coletar_disco", return_value=disco_simulado) as mock_disco,
+            patch("monitor.limpar_tela"),
+            patch("monitor.exibir_cabecalho"),
+            patch("monitor.exibir_recursos") as mock_recursos,
+            patch("monitor.exibir_status"),
+            patch("monitor.registrar_alertas") as mock_registrar,
+            patch("monitor.exibir_rodape")
+        ):
+            monitor.executar_ciclo(
+                80,
+                80,
+                80,
+                estados_alerta
+            )
 
         mock_cpu.assert_called_once()
         mock_memoria.assert_called_once()
@@ -512,35 +519,36 @@ class TestarMonitor(unittest.TestCase):
             "disco": False
         }
 
-        with patch("monitor.coletar_cpu", return_value=30.0) as mock_cpu:
-            with patch(
-                    "monitor.coletar_memoria",
-                    return_value=memoria_simulada
-                ) as mock_memoria:
-                with patch(
-                        "monitor.coletar_disco",
-                        side_effect=[disco_simulado_1, disco_simulado_2]
-                    ) as mock_disco:
-                    with patch("monitor.limpar_tela"):
-                        with patch("monitor.exibir_cabecalho"):
-                            with patch("monitor.exibir_recursos") as mock_recursos:
-                                with patch("monitor.exibir_status"):
-                                    with patch("monitor.registrar_alertas") as mock_registrar:
-                                        with patch("monitor.exibir_rodape"):
+        with (
+            patch("monitor.coletar_cpu", return_value=30.0) as mock_cpu,
+            patch(
+                "monitor.coletar_memoria",
+                return_value=memoria_simulada
+            ) as mock_memoria,
+            patch(
+                "monitor.coletar_disco",
+                side_effect=[disco_simulado_1, disco_simulado_2]
+            ) as mock_disco,
+            patch("monitor.limpar_tela"),
+            patch("monitor.exibir_cabecalho"),
+            patch("monitor.exibir_recursos") as mock_recursos,
+            patch("monitor.exibir_status"),
+            patch("monitor.registrar_alertas") as mock_registrar,
+            patch("monitor.exibir_rodape")
+        ):
+            monitor.executar_ciclo(
+                80,
+                80,
+                80,
+                estados_alerta
+            )
 
-                                            monitor.executar_ciclo(
-                                                80,
-                                                80,
-                                                80,
-                                                estados_alerta
-                                            )
-
-                                            monitor.executar_ciclo(
-                                                80,
-                                                80,
-                                                80,
-                                                estados_alerta
-                                            )
+            monitor.executar_ciclo(
+                80,
+                80,
+                80,
+                estados_alerta
+            )
 
         mock_cpu.assert_has_calls([
             call(),
