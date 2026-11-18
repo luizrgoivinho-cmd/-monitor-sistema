@@ -1,7 +1,7 @@
-import unittest
 from unittest.mock import patch, call
-
+import unittest
 import monitor
+import runpy
 
 def criar_recurso_simulado(percent):
     return type(
@@ -11,6 +11,23 @@ def criar_recurso_simulado(percent):
     )()
 
 class TestarMonitor(unittest.TestCase):
+
+    def test_executar_arquivo_diretamente(self):
+        with (
+            patch("funcoes.escolher_limite", return_value=80) as mock_escolher,
+            patch("coleta.coletar_cpu", side_effect=StopIteration) as mock_cpu
+        ):
+            with self.assertRaises(StopIteration):
+                runpy.run_path("monitor.py", run_name="__main__")
+
+        mock_escolher.assert_has_calls([
+            call("CPU"),
+            call("memória"),
+            call("disco")
+        ])
+
+        mock_cpu.assert_called_once()
+    
 
     def test_configurar_limites(self):
         with (
