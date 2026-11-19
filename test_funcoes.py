@@ -125,6 +125,11 @@ class TestarObterLimite(unittest.TestCase):
 
         self.assertEqual(resultado, (["CPU elevada: 90%"], True))
 
+    def test_cpu_igual_ao_limite(self):
+        resultado = verificar_cpu(80, 80)
+
+        self.assertIsNone(resultado)
+
     def test_alerta_repetindo(self):
         resultado = controlar_alerta(True, "CPU elevada: 95%", "CPU normalizada: 50%")
 
