@@ -100,6 +100,11 @@ class TestarObterLimite(unittest.TestCase):
 
         self.assertEqual(resultado, "Memória RAM elevada: 90%")
 
+    def test_memoria_igual_ao_limite(self):
+        resultado = verificar_memoria(80, 80)
+
+        self.assertIsNone(resultado)
+
     def test_memoria_normal(self):
         resultado = verificar_memoria(60, 80)
 
@@ -155,6 +160,10 @@ class TestarObterLimite(unittest.TestCase):
         )
 
         self.assertEqual(resultado, ([], False))
+
+    def test_disco_igual_ao_limite(self):
+        resultado = verificar_disco(80, 80)
+        self.assertIsNone(resultado)
 
 if __name__ == "__main__":
     unittest.main()
