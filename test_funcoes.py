@@ -16,6 +16,10 @@ class TestarObterLimite(unittest.TestCase):
     def test_limite_valido(self, entrada_simulada):
         self.assertEqual(obter_limite("CPU"), 80.0)
 
+        entrada_simulada.assert_called_once_with(
+            "Qual o limite de CPU (0 a 100)? "
+        )
+
     @patch("builtins.input", side_effect=["150", "80"])
     def test_limite_acima_do_permitido(self, entrada_simulada):
         resultado = obter_limite("CPU")
@@ -42,6 +46,13 @@ class TestarObterLimite(unittest.TestCase):
         resultado = obter_limite("CPU")
 
         self.assertEqual(resultado, 0.0)
+        self.assertEqual(entrada_simulada.call_count, 1)
+
+    @patch("builtins.input", side_effect=["100", "80"])
+    def test_limite_cem(self, entrada_simulada):
+        resultado = obter_limite("CPU")
+
+        self.assertEqual(resultado, 100.0)
         self.assertEqual(entrada_simulada.call_count, 1)
 
     @patch("builtins.input", return_value="n")
