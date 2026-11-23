@@ -3,3 +3,5 @@ alerta.log
 __pycache__/
 *.pyc
 *.sql
+.coverage
+htmlcov/
