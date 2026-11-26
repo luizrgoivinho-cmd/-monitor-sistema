@@ -8,6 +8,21 @@ from types import SimpleNamespace
 
 class TestarIntegracao(unittest.TestCase):
 
+    @staticmethod
+    def criar_estados_alerta():
+        return {
+            "cpu": False,
+            "memoria": False,
+            "disco": False
+        }
+
+    @staticmethod
+    def criar_recursos_simulados(memoria, disco):
+        memoria_simulada = SimpleNamespace(percent=memoria)
+        disco_simulado = SimpleNamespace(percent=disco)
+
+        return memoria_simulada, disco_simulado
+
     def test_coleta_e_verificacao_cpu(self):
         with patch("coleta.psutil.cpu_percent", return_value=90.0) as mock_cpu:
             cpu = coletar_cpu()
@@ -17,18 +32,13 @@ class TestarIntegracao(unittest.TestCase):
         mock_cpu.assert_called_once_with(interval=1)
 
     def test_integracao_ciclo_monitoramento(self):
-        estados_alerta = {
-            "cpu": False,
-            "memoria": False,
-            "disco": False
-        }
+        estados_alerta = self.criar_estados_alerta()
 
-        memoria_simulada = SimpleNamespace(percent=90.0)
-        disco_simulado = SimpleNamespace(percent=90.0)
+        memoria, disco = self.criar_recursos_simulados(90.0, 90.0)
 
         with patch("coleta.psutil.cpu_percent", return_value=90.0) as mock_cpu, \
-            patch("coleta.psutil.virtual_memory", return_value=memoria_simulada) as mock_memoria, \
-                        patch("coleta.psutil.disk_usage", return_value=disco_simulado) as mock_disco, \
+            patch("coleta.psutil.virtual_memory", return_value=memoria) as mock_memoria, \
+                        patch("coleta.psutil.disk_usage", return_value=disco) as mock_disco, \
             patch("monitor.registrar_alertas") as mock_registrar:
             executar_ciclo(
                 limite_cpu=80,
@@ -53,18 +63,13 @@ class TestarIntegracao(unittest.TestCase):
         self.assertIn("uso do disco elevado: 90.0%", alertas_registrados)
 
     def test_integracao_ciclo_normal(self):
-        estados_alerta = {
-            "cpu": False,
-            "memoria": False,
-            "disco": False
-        }
+        estados_alerta = self.criar_estados_alerta()
 
-        memoria_simulada = SimpleNamespace(percent=30.0)
-        disco_simulado = SimpleNamespace(percent=30.0)
+        memoria, disco = self.criar_recursos_simulados(30.0, 30.0)
 
         with patch("coleta.psutil.cpu_percent", return_value=30.0), \
-             patch("coleta.psutil.virtual_memory", return_value=memoria_simulada), \
-             patch("coleta.psutil.disk_usage", return_value=disco_simulado), \
+             patch("coleta.psutil.virtual_memory", return_value=memoria), \
+             patch("coleta.psutil.disk_usage", return_value=disco), \
              patch("monitor.registrar_alertas") as mock_registrar:
 
             executar_ciclo(
@@ -81,18 +86,13 @@ class TestarIntegracao(unittest.TestCase):
         self.assertFalse(estados_alerta["disco"])
 
     def test_integracao_alerta_somente_cpu(self):
-        estados_alerta = {
-            "cpu": False,
-            "memoria": False,
-            "disco": False
-        }
+        estados_alerta = self.criar_estados_alerta()
 
-        memoria_simulada = SimpleNamespace(percent=30.0)
-        disco_simulado = SimpleNamespace(percent=30.0)
+        memoria, disco = self.criar_recursos_simulados(30.0, 30.0)
 
         with patch("coleta.psutil.cpu_percent", return_value=90.0), \
-             patch("coleta.psutil.virtual_memory", return_value=memoria_simulada), \
-             patch("coleta.psutil.disk_usage", return_value=disco_simulado), \
+             patch("coleta.psutil.virtual_memory", return_value=memoria), \
+             patch("coleta.psutil.disk_usage", return_value=disco), \
              patch("monitor.registrar_alertas") as mock_registrar:
 
             executar_ciclo(
@@ -114,18 +114,13 @@ class TestarIntegracao(unittest.TestCase):
         self.assertFalse(estados_alerta["disco"])
 
     def test_integracao_alerta_somente_memoria(self):
-        estados_alerta = {
-            "cpu": False,
-            "memoria": False,
-            "disco": False
-        }
+        estados_alerta = self.criar_estados_alerta()
 
-        memoria_simulada = SimpleNamespace(percent=90.0)
-        disco_simulado = SimpleNamespace(percent=30.0)
+        memoria, disco = self.criar_recursos_simulados(90.0, 30.0)
 
         with patch("coleta.psutil.cpu_percent", return_value=30.0), \
-             patch("coleta.psutil.virtual_memory", return_value=memoria_simulada), \
-             patch("coleta.psutil.disk_usage", return_value=disco_simulado), \
+             patch("coleta.psutil.virtual_memory", return_value=memoria), \
+             patch("coleta.psutil.disk_usage", return_value=disco), \
              patch("monitor.registrar_alertas") as mock_registrar:
 
             executar_ciclo(
@@ -147,18 +142,13 @@ class TestarIntegracao(unittest.TestCase):
         self.assertFalse(estados_alerta["disco"])
 
     def test_integracao_alerta_somente_disco(self):
-        estados_alerta = {
-            "cpu": False,
-            "memoria": False,
-            "disco": False
-        }
+        estados_alerta = self.criar_estados_alerta()
 
-        memoria_simulada = SimpleNamespace(percent=30.0)
-        disco_simulado = SimpleNamespace(percent=90.0)
+        memoria, disco = self.criar_recursos_simulados(30.0, 90.0)
 
         with patch("coleta.psutil.cpu_percent", return_value=30.0), \
-             patch("coleta.psutil.virtual_memory", return_value=memoria_simulada), \
-             patch("coleta.psutil.disk_usage", return_value=disco_simulado), \
+             patch("coleta.psutil.virtual_memory", return_value=memoria), \
+             patch("coleta.psutil.disk_usage", return_value=disco), \
              patch("monitor.registrar_alertas") as mock_registrar:
 
             executar_ciclo(
@@ -180,14 +170,9 @@ class TestarIntegracao(unittest.TestCase):
         self.assertTrue(estados_alerta["disco"])
 
     def test_integracao_normalizacao_cpu(self):
-        estados_alerta = {
-            "cpu": False,
-            "memoria": False,
-            "disco": False
-        }
+        estados_alerta = self.criar_estados_alerta()
 
-        memoria_simulada = SimpleNamespace(percent=30.0)
-        disco_simulado = SimpleNamespace(percent=30.0)
+        memoria, disco = self.criar_recursos_simulados(30.0, 30.0)
 
         with patch(
             "coleta.psutil.cpu_percent",
@@ -195,11 +180,11 @@ class TestarIntegracao(unittest.TestCase):
         ) as mock_cpu, \
              patch(
                  "coleta.psutil.virtual_memory",
-                 return_value=memoria_simulada
+                 return_value=memoria
              ), \
              patch(
                  "coleta.psutil.disk_usage",
-                 return_value=disco_simulado
+                 return_value=disco
              ), \
              patch("monitor.registrar_alertas") as mock_registrar:
 
