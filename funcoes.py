@@ -16,6 +16,11 @@ def obter_limite(recurso):
         except ValueError:
             print("Erro: digite um número válido.")
 
+def verificar_proximidade(valor, limite):
+    inicio_proximidade = limite - 10
+    if inicio_proximidade <= valor < limite:
+        return f"Recurso próximo do limite: {valor}%"
+    return None
 
 def escolher_limite(recurso, padrao=80):
     while True:

@@ -8,6 +8,7 @@ from funcoes import verificar_disco
 from funcoes import normalizar_cpu
 from funcoes import registrar_alertas
 from funcoes import controlar_alerta
+from funcoes import verificar_proximidade
 
 
 class TestarObterLimite(unittest.TestCase):
@@ -174,6 +175,27 @@ class TestarObterLimite(unittest.TestCase):
 
     def test_disco_igual_ao_limite(self):
         resultado = verificar_disco(80, 80)
+        self.assertIsNone(resultado)
+
+class TestarVerificarProximidade(unittest.TestCase):
+
+    def test_abaixo_da_faixa(self):
+        resultado = verificar_proximidade(65, 80)
+
+        self.assertIsNone(resultado)
+
+
+    def test_dentro_da_faixa(self):
+        resultado = verificar_proximidade(75, 80)
+
+        self.assertEqual(
+            resultado,
+            "Recurso próximo do limite: 75%"
+        )
+
+    def test_no_limite_critico(self):
+        resultado = verificar_proximidade(80, 80)
+
         self.assertIsNone(resultado)
 
 if __name__ == "__main__":

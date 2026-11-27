@@ -13,7 +13,8 @@ from funcoes import (
     verificar_memoria,
     verificar_disco,
     registrar_alertas,
-    controlar_alerta
+    controlar_alerta,
+    verificar_proximidade
 )
 
 from interface import (
@@ -28,8 +29,10 @@ def executar_ciclo(
     limite_cpu,
     limite_memoria,
     limite_disco,
-    estados_alerta
+    estados_alerta,
+    estados_proximidade
 ):
+
     cpu = coletar_cpu()
     memoria = coletar_memoria()
     disco = coletar_disco().percent
@@ -42,6 +45,22 @@ def executar_ciclo(
     novos_alertas = []
 
     alerta_cpu = verificar_cpu(cpu, limite_cpu)
+    proximidade_cpu = (
+        None if alerta_cpu is not None
+        else verificar_proximidade(cpu, limite_cpu)
+    )
+
+    if alerta_cpu is not None:
+        estados_proximidade["cpu"] = False
+    else:
+        novos, estados_proximidade["cpu"] = controlar_alerta(
+            estados_proximidade["cpu"],
+            proximidade_cpu,
+            "CPU voltou à faixa normal."
+        )
+
+        alertas.extend(novos)
+        novos_alertas.extend(novos)
 
     novos, estados_alerta["cpu"] = controlar_alerta(
         estados_alerta["cpu"],
@@ -57,6 +76,25 @@ def executar_ciclo(
         memoria.percent, limite_memoria
     )
 
+    proximidade_memoria = (
+        None if alerta_memoria is not None
+        else verificar_proximidade(
+            memoria.percent, limite_memoria
+        )
+    )
+
+    if alerta_memoria is not None:
+        estados_proximidade["memoria"] = False
+    else:
+        novos, estados_proximidade["memoria"] = controlar_alerta(
+            estados_proximidade["memoria"],
+            proximidade_memoria,
+            "Memória RAM voltou à faixa normal."
+        )
+
+        alertas.extend(novos)
+        novos_alertas.extend(novos)
+
     novos, estados_alerta["memoria"] = controlar_alerta(
         estados_alerta["memoria"],
         alerta_memoria,
@@ -69,6 +107,23 @@ def executar_ciclo(
     novos_alertas.extend(novos)
 
     alerta_disco = verificar_disco(disco, limite_disco)
+
+    proximidade_disco = (
+        None if alerta_disco is not None
+        else verificar_proximidade(disco, limite_disco)
+    )
+
+    if alerta_disco is not None:
+        estados_proximidade["disco"] = False
+    else:
+        novos, estados_proximidade["disco"] = controlar_alerta(
+            estados_proximidade["disco"],
+            proximidade_disco,
+            "Disco voltou à faixa normal."
+        )
+
+        alertas.extend(novos)
+        novos_alertas.extend(novos)
 
     novos, estados_alerta["disco"] = controlar_alerta(
         estados_alerta["disco"],
@@ -99,12 +154,19 @@ def main():
         "disco": False
     }
 
+    estados_proximidade = {
+        "cpu": False,
+        "memoria": False,
+        "disco": False
+    }
+
     while True:
         executar_ciclo(
             limite_cpu,
             limite_memoria,
             limite_disco,
-            estados_alerta
+            estados_alerta,
+            estados_proximidade
         )
 
         time.sleep(1)

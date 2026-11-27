@@ -12,6 +12,14 @@ def criar_recurso_simulado(percent):
 
 class TestarMonitor(unittest.TestCase):
 
+    @staticmethod
+    def criar_estados_proximidade():
+        return {
+            "cpu": False,
+            "memoria": False,
+            "disco": False
+        }
+
     def test_executar_arquivo_diretamente(self):
         with (
             patch("funcoes.escolher_limite", return_value=80) as mock_escolher,
@@ -235,6 +243,8 @@ class TestarMonitor(unittest.TestCase):
             "disco": False
         }
 
+        estados_proximidade = self.criar_estados_proximidade()
+
         with (
             patch("monitor.coletar_cpu", return_value=30.0) as mock_cpu,
             patch("monitor.coletar_memoria", return_value=memoria_simulada) as mock_memoria,
@@ -249,7 +259,8 @@ class TestarMonitor(unittest.TestCase):
                 80,
                 80,
                 80,
-                estados_alerta
+                estados_alerta,
+                estados_proximidade
             )
 
         mock_cpu.assert_called_once()
@@ -272,6 +283,8 @@ class TestarMonitor(unittest.TestCase):
             "disco": False
         }
 
+        estados_proximidade = self.criar_estados_proximidade()
+
         with (
             patch("monitor.coletar_cpu", return_value=90.0) as mock_cpu,
             patch("monitor.coletar_memoria", return_value=memoria_simulada) as mock_memoria,
@@ -287,7 +300,8 @@ class TestarMonitor(unittest.TestCase):
                 80,
                 80,
                 80,
-                estados_alerta
+                estados_alerta,
+                estados_proximidade
             )
 
         mock_cpu.assert_called_once()
@@ -316,6 +330,8 @@ class TestarMonitor(unittest.TestCase):
             "disco": False
         }
 
+        estados_proximidade = self.criar_estados_proximidade()
+
         with (
             patch("monitor.coletar_cpu", side_effect=[90.0, 30.0]) as mock_cpu,
             patch("monitor.coletar_memoria", return_value=memoria_simulada) as mock_memoria,
@@ -331,14 +347,16 @@ class TestarMonitor(unittest.TestCase):
                 80,
                 80,
                 80,
-                estados_alerta
+                estados_alerta,
+                estados_proximidade
             )
 
             monitor.executar_ciclo(
                 80,
                 80,
                 80,
-                estados_alerta
+                estados_alerta,
+                estados_proximidade
             )
 
         mock_cpu.assert_has_calls([
@@ -377,6 +395,8 @@ class TestarMonitor(unittest.TestCase):
             "disco": False
         }
 
+        estados_proximidade = self.criar_estados_proximidade()
+
         with (
             patch("monitor.coletar_cpu", return_value=30.0) as mock_cpu,
             patch("monitor.coletar_memoria", return_value=memoria_simulada) as mock_memoria,
@@ -392,7 +412,8 @@ class TestarMonitor(unittest.TestCase):
                 80,
                 80,
                 80,
-                estados_alerta
+                estados_alerta,
+                estados_proximidade
             )
 
         mock_cpu.assert_called_once()
@@ -424,6 +445,8 @@ class TestarMonitor(unittest.TestCase):
             "disco": False
         }
 
+        estados_proximidade = self.criar_estados_proximidade()
+
         with (
             patch("monitor.coletar_cpu", return_value=30.0) as mock_cpu,
             patch(
@@ -442,14 +465,16 @@ class TestarMonitor(unittest.TestCase):
                 80,
                 80,
                 80,
-                estados_alerta
+                estados_alerta,
+                estados_proximidade
             )
 
             monitor.executar_ciclo(
                 80,
                 80,
                 80,
-                estados_alerta
+                estados_alerta,
+                estados_proximidade
             )
 
         mock_cpu.assert_has_calls([
@@ -488,6 +513,8 @@ class TestarMonitor(unittest.TestCase):
             "disco": False
         }
 
+        estados_proximidade = self.criar_estados_proximidade()
+
         with (
             patch("monitor.coletar_cpu", return_value=30.0) as mock_cpu,
             patch("monitor.coletar_memoria", return_value=memoria_simulada) as mock_memoria,
@@ -503,7 +530,8 @@ class TestarMonitor(unittest.TestCase):
                 80,
                 80,
                 80,
-                estados_alerta
+                estados_alerta,
+                estados_proximidade
             )
 
         mock_cpu.assert_called_once()
@@ -536,6 +564,8 @@ class TestarMonitor(unittest.TestCase):
             "disco": False
         }
 
+        estados_proximidade = self.criar_estados_proximidade()
+
         with (
             patch("monitor.coletar_cpu", return_value=30.0) as mock_cpu,
             patch(
@@ -557,14 +587,16 @@ class TestarMonitor(unittest.TestCase):
                 80,
                 80,
                 80,
-                estados_alerta
+                estados_alerta,
+                estados_proximidade
             )
 
             monitor.executar_ciclo(
                 80,
                 80,
                 80,
-                estados_alerta
+                estados_alerta,
+                estados_proximidade
             )
 
         mock_cpu.assert_has_calls([
